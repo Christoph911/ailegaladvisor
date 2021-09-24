@@ -1,7 +1,6 @@
 # AI-based Legal Advisor :judge:
 
-### :warning:
-The project has just started and is currently a prototype! 
+### :warning: The project has just started and is currently a prototype! 
 
 
 ## Project philosophy
