@@ -45,7 +45,7 @@ class DocumentStore:
             scheme='https',
             username='legaladvisor',
             password='i6@@Stx2U2waYh',
-            embedding_field=None
+            #embedding_field=None
         )
 
         return document_store
