@@ -1,0 +1,8 @@
+faiss-cpu==1.7.1.post2
+farm-haystack==0.9.0
+fastapi==0.68.1
+spacy
+spacy-streamlit==1.0.2
+spacy-transformers==1.0.5
+st-annotated-text==1.1.0
+streamlit==0.87.0
