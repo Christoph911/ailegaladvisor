@@ -15,12 +15,12 @@
 - ElasticSearch     (https://www.elastic.co/de/elasticsearch/)
 
 ## Installation Guidelines
-:warning: CAVE: To run the app successfully you need access to a document database
+:warning: CAVE: To run the webapp you need access to your own document database. Our database is not public at the moment!
 
 1. Clone Repository
 2. Create your virtual environment
 3. Install requirements
-4. setup a document database
+4. setup a document database (e.g. ElasticSearch)
 5. Have fun :) 
 
 ## Get in contact
