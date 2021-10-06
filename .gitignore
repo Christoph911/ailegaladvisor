@@ -2,5 +2,4 @@
 /__pycache__
 /mlruns
 /spacy_models
-.gitignore
 fill_db.ipynb
