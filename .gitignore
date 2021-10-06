@@ -1,4 +1,6 @@
+/data
 /__pycache__
 /mlruns
-/db_communication.py
 /spacy_models
+.gitignore
+fill_db.ipynb
