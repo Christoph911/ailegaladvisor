@@ -17,6 +17,7 @@ from haystack.retriever.dense import DensePassageRetriever
 from haystack.reader.farm import FARMReader
 from haystack.pipeline import DocumentSearchPipeline, ExtractiveQAPipeline
 from fastapi import FastAPI
+import pandas as pd
 
 
 # init api
@@ -71,7 +72,7 @@ class Streamlit:
         ner = visualize_ner(doc, labels=nlp.get_pipe("ner").labels)
 
 
-        return ner 
+        return ner
         
    
     def build_ui(self):
@@ -85,7 +86,8 @@ class Streamlit:
         ### build UI ###
 
         # title
-        st.title('AI-based Legal Advisor :scales:')
+        st.image('data/Logo_aila.png', use_column_width='auto')
+        #st.title('AI-based Legal Advisor :scales:')
 
         # sidebar
         st.sidebar.write("**Filter:**")
@@ -97,8 +99,7 @@ class Streamlit:
         filter_n_reader = st.sidebar.number_input(min_value=0, max_value=20, value=20, label="Anzahl Reader results")
 
         # searchbar
-        st.subheader("Input")
-        user_input = st.text_input('Bitte geben sie einen Suchbegriff oder eine Frage ein:', value="BGH Urteil Kläger")
+        user_input = st.text_input('Bitte geben sie einen Suchbegriff oder eine Frage ein:', value="Losverfahren Universität")
         run_query = st.button("Search")
 
         # define action if search button is clicked
@@ -107,27 +108,30 @@ class Streamlit:
             # call pipeline with user input
             results = asyncio.run(qa.get_pipeline(user_input))
 
-            st.write("## Answers:")
+            
             
             # if document-retrieval pipeline is called:
             if "documents" in results: 
+                st.write("## Retrieved Documents:")
+                st.markdown("""---""")
 
                 for i in range(len(results)-1):
-                    st.write("**Titel:**", results["documents"][i]["meta"]["file_slug"]),
-                    st.write("**Datum:**", results["documents"][i]["meta"]["file_date"]),
-                    st.write("**Bez.:**", results["documents"][i]["meta"]["file_number"]),
-                    st.write("**Typ.:**", results["documents"][i]["meta"]["file_type"]),
-                    st.write("**Gericht:**", results["documents"][i]["meta"]["court_name"]),
-                    st.write("**Status Gericht:**", results["documents"][i]["meta"]["court_level_of_appeal"]),
-                    st.write("**Gerichtbarkeit:**", results["documents"][i]["meta"]["court_jurisdiction"]),
                     st.write("**Score:**", round(results["documents"][i]["score"], 2)),
-
-                    st.write("**Text:**"),
-                    st.markdown(results["documents"][i]["text"], unsafe_allow_html=True)
-                    st.write("**Entities:**")
-                    st.write(self.get_entities(results["documents"][i]["text"]), unsafe_allow_html=True)
-                    st.markdown("""---""")
+                    with st.expander(label=results["documents"][i]["meta"]["file_slug"]):
+                        st.write("**Titel:**", results["documents"][i]["meta"]["file_slug"]),
+                        st.write("**Datum:**", results["documents"][i]["meta"]["file_date"]),
+                        st.write("**Bez.:**", results["documents"][i]["meta"]["file_number"]),
+                        st.write("**Typ.:**", results["documents"][i]["meta"]["file_type"]),
+                        st.write("**Gericht:**", results["documents"][i]["meta"]["court_name"]),
+                        st.write("**Status Gericht:**", results["documents"][i]["meta"]["court_level_of_appeal"]),
+                        st.write("**Gerichtbarkeit:**", results["documents"][i]["meta"]["court_jurisdiction"]),
+                        st.write("**Score:**", round(results["documents"][i]["score"], 2)),
+                        st.markdown(results["documents"][i]["text"], unsafe_allow_html=True)
+                        st.write("**Legal Entities**")
+                        st.write(self.get_entities(results["documents"][i]["text"]), unsafe_allow_html=True)
+                        st.markdown("""---""")
             else:
+                st.write("## Retrieved Answers:")
                 # if qa-pipeline is called:
                 for i in range(len(results)-1):
                     st.write("**Titel:**", results["answers"][i]["meta"]["file_slug"]),
@@ -139,10 +143,10 @@ class Streamlit:
                     st.write("**Gerichtbarkeit:**", results["answers"][i]["meta"]["court_jurisdiction"]),
                     st.write("**Score:**", round(results["answers"][i]["probability"], 2)),
 
-                    st.write("**Text:**"),
                     st.markdown(self.annotate_answer(results["answers"][i]["answer"], results["answers"][i]["context"]), unsafe_allow_html=True)
-                    st.write("**Entities:**")
-                    st.write(self.get_entities(results["answers"][i]["context"]), unsafe_allow_html=True)
+                    with st.expander("Legal Entities:"):
+                        st.write(self.get_entities(results["answers"][i]["context"]), unsafe_allow_html=True)
+
                     st.markdown("""---""")
 
             
@@ -162,7 +166,7 @@ class SearchEngine:
         self.document_search_pipeline = self.get_document_search_pipeline()
         self.qa_pipeline = self.get_qa_pipeline()
 
-
+    @st.cache(allow_output_mutation=True)
     def get_document_store(self):
         '''
         Call init document_store from class DocumentStore
