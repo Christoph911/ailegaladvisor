@@ -17,7 +17,7 @@ from haystack.retriever.dense import DensePassageRetriever
 from haystack.reader.farm import FARMReader
 from haystack.pipeline import DocumentSearchPipeline, ExtractiveQAPipeline
 from fastapi import FastAPI
-import pandas as pd
+import time
 
 
 # init api
@@ -104,12 +104,10 @@ class Streamlit:
 
         # define action if search button is clicked
         if run_query:
-            
             # call pipeline with user input
             results = asyncio.run(qa.get_pipeline(user_input))
+            
 
-            
-            
             # if document-retrieval pipeline is called:
             if "documents" in results: 
                 st.write("## Retrieved Documents:")
@@ -129,28 +127,25 @@ class Streamlit:
                         st.markdown(results["documents"][i]["text"], unsafe_allow_html=True)
                         st.write("**Legal Entities**")
                         st.write(self.get_entities(results["documents"][i]["text"]), unsafe_allow_html=True)
-                        st.markdown("""---""")
             else:
                 st.write("## Retrieved Answers:")
                 # if qa-pipeline is called:
                 for i in range(len(results)-1):
-                    st.write("**Titel:**", results["answers"][i]["meta"]["file_slug"]),
-                    st.write("**Datum:**", results["answers"][i]["meta"]["file_date"]),
-                    st.write("**Bez.:**", results["answers"][i]["meta"]["file_number"]),
-                    st.write("**Typ.:**", results["answers"][i]["meta"]["file_type"]),
-                    st.write("**Gericht:**", results["answers"][i]["meta"]["court_name"]),
-                    st.write("**Status Gericht:**", results["answers"][i]["meta"]["court_level_of_appeal"]),
-                    st.write("**Gerichtbarkeit:**", results["answers"][i]["meta"]["court_jurisdiction"]),
-                    st.write("**Score:**", round(results["answers"][i]["probability"], 2)),
+                    st.write("**Score:**", round(results["answers"][i]["score"]/10, 2)),
+                    with st.expander(label=results["answers"][i]["meta"]["file_slug"]):
+                        st.write("**Titel:**", results["answers"][i]["meta"]["file_slug"]),
+                        st.write("**Datum:**", results["answers"][i]["meta"]["file_date"]),
+                        st.write("**Bez.:**", results["answers"][i]["meta"]["file_number"]),
+                        st.write("**Typ.:**", results["answers"][i]["meta"]["file_type"]),
+                        st.write("**Gericht:**", results["answers"][i]["meta"]["court_name"]),
+                        st.write("**Status Gericht:**", results["answers"][i]["meta"]["court_level_of_appeal"]),
+                        st.write("**Gerichtbarkeit:**", results["answers"][i]["meta"]["court_jurisdiction"]),
+                        st.write("**Score:**", round(results["answers"][i]["score"]/10, 2)),
 
-                    st.markdown(self.annotate_answer(results["answers"][i]["answer"], results["answers"][i]["context"]), unsafe_allow_html=True)
-                    with st.expander("Legal Entities:"):
-                        st.write(self.get_entities(results["answers"][i]["context"]), unsafe_allow_html=True)
-
-                    st.markdown("""---""")
-
-            
-                
+                        st.markdown(self.annotate_answer(results["answers"][i]["answer"], results["answers"][i]["context"]), unsafe_allow_html=True)
+                    #with st.expander("Legal Entities:"):
+                    #    st.write(self.get_entities(results["answers"][i]["context"]), unsafe_allow_html=True)
+ 
 
 class SearchEngine:
     '''
