@@ -1,0 +1,15 @@
+artifact_uri: file:///home/azureuser/projects/ailegaladvisor/src/mlruns/0/e45fa0da6eea4f53bf0a6e14e5c9aee3/artifacts
+end_time: 1638203783221
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: e45fa0da6eea4f53bf0a6e14e5c9aee3
+run_uuid: e45fa0da6eea4f53bf0a6e14e5c9aee3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1638203621397
+status: 3
+tags: []
+user_id: azureuser

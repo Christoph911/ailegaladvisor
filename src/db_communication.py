@@ -6,7 +6,7 @@
 # Released under GNU Public License (GPL)
 # -----------------------------------------------------------
 
-import data_preprocessing
+#from utils.data_preprocessing import Preprocessing
 from haystack.document_store.elasticsearch import ElasticsearchDocumentStore
 
 class DocumentStore:
@@ -28,7 +28,7 @@ class DocumentStore:
             document store
         '''
         document_store = ElasticsearchDocumentStore(
-            host='hostname',
+            host='DATABASE_HOST',
             port=443,
             scheme='https',
             username="", 
@@ -70,14 +70,14 @@ class DocumentStore:
 
         return print("Successfully deleted all documents in the document store")
 
-if __name__ == "__main__":
-    prep = data_preprocessing.Preprocessing()
-    json_file = prep.load_json_long()
-    data_dictionary = prep.load_json_long(json_file)
-    data_preprocessed = prep.preprocess_data(data_dictionary)
-    data_to_write = data_preprocessed
+#if __name__ == "__main__":
+    # prep = Preprocessing()
+    # json_file = prep.load_json_long()
+    # data_dictionary = prep.load_json_long(json_file)
+    # data_preprocessed = prep.preprocess_data(data_dictionary)
+    # data_to_write = data_preprocessed
 
-    doc_store = DocumentStore()
-    document_store = doc_store.init_document_store()
-    doc_store.write_documents(document_store, data_to_write)
-    doc_store.count_documents(document_store)
+    # doc_store = DocumentStore()
+    # document_store = doc_store.init_document_store()
+    # doc_store.write_documents(document_store, data_to_write)
+    # doc_store.count_documents(document_store)
