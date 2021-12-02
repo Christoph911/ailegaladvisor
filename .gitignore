@@ -3,3 +3,6 @@
 /mlruns
 /spacy_models
 /utils
+/__pycache__
+/scr/__pycache__
+/scr/mlruns
