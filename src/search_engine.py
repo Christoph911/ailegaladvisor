@@ -7,11 +7,9 @@
 
 import streamlit as st
 from db_communication import DocumentStore
-from haystack.retriever.sparse import ElasticsearchRetriever
-from haystack.retriever.dense import DensePassageRetriever
-from haystack.reader.farm import FARMReader
-from haystack.pipeline import DocumentSearchPipeline, ExtractiveQAPipeline
-
+from haystack.nodes.retriever import ElasticsearchRetriever, DensePassageRetriever
+from haystack.nodes.reader import FARMReader
+from haystack.pipelines import DocumentSearchPipeline, ExtractiveQAPipeline
 
 
 class SearchEngine:

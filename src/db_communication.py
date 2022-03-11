@@ -7,7 +7,8 @@
 # -----------------------------------------------------------
 
 #from utils.data_preprocessing import Preprocessing
-from haystack.document_store.elasticsearch import ElasticsearchDocumentStore
+import streamlit as st
+from haystack.document_stores import ElasticsearchDocumentStore
 
 class DocumentStore:
     '''
@@ -28,11 +29,11 @@ class DocumentStore:
             document store
         '''
         document_store = ElasticsearchDocumentStore(
-            host='DATABASE_HOST',
-            port=443,
+            host=st.secrets.db_credentials.host,
+            port=st.secrets.db_credentials.port,
             scheme='https',
-            username="", 
-            password="", 
+            username=st.secrets.db_credentials.username, 
+            password=st.secrets.db_credentials.password, 
             index="document"
         )
 
