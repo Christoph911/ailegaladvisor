@@ -5,6 +5,7 @@
 # Released under GNU Public License (GPL)
 # -----------------------------------------------------------
 
+import streamlit as st
 import spacy
 from spacy_streamlit import visualize_ner
 
@@ -27,7 +28,7 @@ class LegalNER:
             DataFrame with Legal Named Entities
         '''
 
-        nlp = spacy.load("../spacy_models/model-best")
+        nlp = spacy.load(st.secrets.paths.ner_model)
         doc = nlp(context)
         ner = visualize_ner(doc, labels=nlp.get_pipe("ner").labels)
 

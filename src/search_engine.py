@@ -7,10 +7,9 @@
 
 import streamlit as st
 from db_communication import DocumentStore
-from haystack.nodes.retriever import ElasticsearchRetriever, DensePassageRetriever
+from haystack.nodes.retriever import ElasticsearchRetriever, EmbeddingRetriever
 from haystack.nodes.reader import FARMReader
 from haystack.pipelines import DocumentSearchPipeline, ExtractiveQAPipeline
-
 
 class SearchEngine:
     '''
@@ -21,51 +20,53 @@ class SearchEngine:
     def __init__(self):
         self.document_store = self.get_document_store()
         self.retriever_bm25 = self.get_retriever_bm25()
-        self.retriever_dpr = self.get_retriever_dpr()
+        #self.retriever_emb = self.get_retriever_emb()
         self.reader = self.get_reader()
         self.document_search_pipeline = self.get_document_search_pipeline()
         self.qa_pipeline = self.get_qa_pipeline()
 
-    @st.cache(allow_output_mutation=True)
-    def get_document_store(self):
+    #@st.cache(allow_output_mutation=True)
+    @st.experimental_singleton
+    def get_document_store(_self):
         '''
         Call init document_store from class DocumentStore
 
         return: connection to the document_store
         '''
 
-        document_store = DocumentStore.init_document_store(self)
+        document_store = DocumentStore.init_document_store(_self)
+        print(f"There are {document_store.get_document_count()} documents in the database")
     
         return document_store
     
-
-    def get_retriever_bm25(self):
+    @st.experimental_singleton
+    def get_retriever_bm25(_self):
         # Init BM25 retriever for document/passage retrieval
 
-        retriever_bm25 = ElasticsearchRetriever(document_store=self.document_store)
+        retriever_bm25 = ElasticsearchRetriever(document_store=_self.document_store)
     
         return retriever_bm25
     
+    # #TODO: Change to own emb. retriever
+    # @st.experimental_singleton
+    # def get_retriever_emb(_self):
+    #     # Init emb retriever for document/passage retrieval
 
-    def get_retriever_dpr(self):
-        # Init DPR retriever for document/passage retrieval
+    #     retriever_emb = EmbeddingRetriever(document_store=_self.document_store,
+    #                                         embedding_model=st.secrets.paths.retriever,
+    #                                         )
 
-        retriever_dpr = DensePassageRetriever(document_store=self.document_store, 
-                                                query_embedding_model='deepset/gbert-base-germandpr-question_encoder', 
-                                                passage_embedding_model='deepset/gbert-base-germandpr-ctx_encoder', 
-                                                use_gpu=True, 
-                                                embed_title=True, 
-                                                use_fast_tokenizers=True)
+    #     return retriever_emb
 
-        return retriever_dpr
-
-
-    def get_reader(self):
+    #TODO: Change to own reader model 
+    @st.experimental_singleton
+    def get_reader(_self):
         # Init FARM-Reader-model for QA
 
-        reader = FARMReader(model_name_or_path="deepset/gelectra-base-germanquad", 
+        reader = FARMReader(model_name_or_path=st.secrets.paths.reader, 
                             context_window_size=300,
-                            use_gpu=True)
+                            use_gpu=True, 
+                            local_files_only=True)
 
         return reader
 
@@ -77,24 +78,24 @@ class SearchEngine:
 
         return document_search_pipeline
 
-
+    # TODO: Implement ensamble retriever
     def get_qa_pipeline(self):
         # Init Question answering pipeline
-        qa_pipeline = ExtractiveQAPipeline(self.reader, self.retriever_dpr)
+        qa_pipeline = ExtractiveQAPipeline(self.reader, self.retriever_bm25)
 
         return qa_pipeline
     
 
     #@app.get('/query')
     # TODO: Filter not working
-    async def get_pipeline(self, user_input, n_retriever_results=10, n_reader_results=3, filter={"file_type": ["Beschluss"]}):
+    async def get_pipeline(self, user_input, k_retriever=10, k_reader=5):
         '''
         Classify unser-input and call specific pipeline.
 
         Args: 
             user_input: query provided by the user
-            n_retriever_results: number of documents/passages returned by the retriever 
-            n_reader_results: number of answers returned by the reader
+            Retriever: top_k: number of documents/passages returned by the retriever 
+            Reader: top_k: number of answers returned by the reader
             filter: query to filter results
 
         Returns: 
@@ -103,8 +104,8 @@ class SearchEngine:
         '''
 
         if "?" in user_input:
-            results = self.qa_pipeline.run(query=user_input, top_k_retriever=n_retriever_results, top_k_reader=n_reader_results, filters=filter)
+            results = self.qa_pipeline.run(query=user_input, params={"Retriever": {"top_k": k_retriever}, "Reader": {"top_k": k_reader}})
         else:
-            results = self.document_search_pipeline.run(query=user_input, top_k_retriever=n_retriever_results)
+            results = self.document_search_pipeline.run(query=user_input, params={"Retriever": {"top_k": k_retriever}})
         print(results)
         return results

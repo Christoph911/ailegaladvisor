@@ -6,7 +6,6 @@
 # Released under GNU Public License (GPL)
 # -----------------------------------------------------------
 
-#from utils.data_preprocessing import Preprocessing
 import streamlit as st
 from haystack.document_stores import ElasticsearchDocumentStore
 
@@ -34,7 +33,7 @@ class DocumentStore:
             scheme='https',
             username=st.secrets.db_credentials.username, 
             password=st.secrets.db_credentials.password, 
-            index="document"
+            index="caselaw"
         )
 
         return document_store
@@ -70,15 +69,3 @@ class DocumentStore:
         self.document_store.delete_documents()
 
         return print("Successfully deleted all documents in the document store")
-
-#if __name__ == "__main__":
-    # prep = Preprocessing()
-    # json_file = prep.load_json_long()
-    # data_dictionary = prep.load_json_long(json_file)
-    # data_preprocessed = prep.preprocess_data(data_dictionary)
-    # data_to_write = data_preprocessed
-
-    # doc_store = DocumentStore()
-    # document_store = doc_store.init_document_store()
-    # doc_store.write_documents(document_store, data_to_write)
-    # doc_store.count_documents(document_store)

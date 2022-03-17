@@ -1,8 +1,8 @@
 /data
-/__pycache__
 /mlruns
-/spacy_models
+/models
 /utils
-/__pycache__
-/scr/__pycache__
 /scr/mlruns
+src/.streamlit/secrets.toml
+src/__pycache__/
+__pycache__/
