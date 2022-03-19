@@ -33,7 +33,7 @@ class DocumentStore:
             scheme='https',
             username=st.secrets.db_credentials.username, 
             password=st.secrets.db_credentials.password, 
-            index="caselaw"
+            index=st.secrets.db_credentials.index
         )
 
         return document_store
