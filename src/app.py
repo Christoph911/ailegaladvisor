@@ -6,6 +6,7 @@
 # -----------------------------------------------------------
 
 import os
+import json
 import streamlit as st
 import asyncio
 from fastapi import FastAPI
@@ -93,9 +94,8 @@ class Streamlit:
 
 
         # searchbar
-        user_input = st.text_input('Bitte geben sie einen Suchbegriff oder eine Frage ein:', value="Losverfahren Universität")
+        user_input = st.text_input('Bitte geben sie einen Suchbegriff oder eine Frage ein:', value="Beispiel: Wer gilt als Halter eines KFZ?", placeholder="Zum Starten der Suche auf den Button 'Suche' klicken")
         run_query = st.button("Suche")
-
 
         # define action if search button is clicked
         if run_query:
@@ -107,13 +107,14 @@ class Streamlit:
                 results = asyncio.run(qa.get_pipeline(user_input, filter_n_retriever, filter_n_reader))
 
                 #if document-retrieval pipeline is called:
-                if "answers" in results: 
+                if "answers" in results:
+                    increment_button_key_answer = 0 
                     st.write("## Relevante Antworten:")
                     for result in results["answers"]:
                         # response to dict 
                         answer = result.to_dict()
                         st.write("**Relevanz:**", round(answer["score"],2)),
-                        with st.expander(label=answer["meta"]["file_slug"]):
+                        with st.expander(label=answer["meta"]["file_type"] + " | " + answer["meta"]["court_name"] + " | " + answer["meta"]["file_date"]):
                             st.write("**Titel:**", answer["meta"]["file_slug"]),
                             st.write("**Datum:**", answer["meta"]["file_date"]),
                             st.write("**Bez.:**", answer["meta"]["file_number"]),
@@ -121,18 +122,27 @@ class Streamlit:
                             st.write("**Typ.:**", answer["meta"]["file_type"]),
                             st.write("**Gericht:**", answer["meta"]["court_name"]),
                             st.write("**Status Gericht:**", answer["meta"]["court_level_of_appeal"]),
-                            st.markdown(self.annotate_answer(answer["answer"], answer["context"]), unsafe_allow_html=True)
+                            st.markdown(self.annotate_answer(answer["answer"], answer["context"]), unsafe_allow_html=True),
+                            st.markdown("""---""")
+                            st.write("**War diese Antwort hilfreich?**")
+                            feedback_btn_col1, feedback_btn_col2 = st.columns([1,7])
+                            with feedback_btn_col1:
+                                st.button("👍 Ja", key=increment_button_key_answer), 
+                            with feedback_btn_col2:
+                                st.button("👎 Nein", key=increment_button_key_answer)
+                            increment_button_key_answer +=1
                             # if check_legal_ner:
                             #     st.write("**Legal Entities**")
                             #     st.write(ner.get_entities(answer["content"]), unsafe_allow_html=True)
 
                 else:
+                    increment_button_key_passage = 0 
                     st.write("## Relevante Passagen:")
                     st.markdown("""---""")
                     for result in results["documents"]:
                         document = result.to_dict()
                         st.write("**Relevanz:**", round(document["score"], 2)),
-                        with st.expander(label=document["meta"]["file_slug"]):
+                        with st.expander(label=document["meta"]["file_type"] + " | " + document["meta"]["court_name"] + " | " + document["meta"]["file_date"]):
                             st.write("**Titel:**", document["meta"]["file_slug"]),
                             st.write("**Datum:**", document["meta"]["file_date"]),
                             st.write("**Bez.:**", document["meta"]["file_number"]),
@@ -141,6 +151,16 @@ class Streamlit:
                             st.write("**Gericht:**", document["meta"]["court_name"]),
                             st.write("**Gerichtbarkeit:**", document["meta"]["court_jurisdiction"]),
                             st.markdown(document["content"], unsafe_allow_html=True)
+                            st.markdown("""---""")
+                            st.write("**War diese Passage hilfreich?**")
+                            feedback_btn_col1, feedback_btn_col2 = st.columns([1,7])
+                            with feedback_btn_col1:
+                                st.button("👍 Ja", key=increment_button_key_passage)
+                            with feedback_btn_col2:
+                                st.button("👎 Nein", key=increment_button_key_passage)
+                            
+                            increment_button_key_passage +=1
+                        
                             # if check_legal_ner:
                             #     st.write("**Legal Entities**")
                             #     st.markdown(ner.get_entities(document["content"]), unsafe_allow_html=True)
