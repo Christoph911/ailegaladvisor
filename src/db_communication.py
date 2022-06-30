@@ -2,7 +2,7 @@
 # Configure DataBase (Document Store) communication for the 
 # AI-based Document Retrieval and QA-System
 # V 0.1
-# (C) 2021 Christoph Hoppe, Germany
+# (C) 2022 Christoph Hoppe, Germany
 # Released under GNU Public License (GPL)
 # -----------------------------------------------------------
 
@@ -28,12 +28,12 @@ class DocumentStore:
             document store
         '''
         document_store = ElasticsearchDocumentStore(
-            host=st.secrets.db_credentials.host,
-            port=st.secrets.db_credentials.port,
-            scheme='https',
-            username=st.secrets.db_credentials.username, 
-            password=st.secrets.db_credentials.password, 
-            index=st.secrets.db_credentials.index
+            host=st.secrets["db_secrets"]["host"],
+            port=st.secrets["db_secrets"]["port"],
+            scheme=st.secrets["db_secrets"]["scheme"],
+            username=st.secrets["db_secrets"]["username"], 
+            password=st.secrets["db_secrets"]["password"], 
+            index=st.secrets["db_secrets"]["index"]
         )
 
         return document_store
