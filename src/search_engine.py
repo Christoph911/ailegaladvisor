@@ -5,6 +5,7 @@
 # Released under GNU Public License (GPL)
 # -----------------------------------------------------------
 
+import os
 import streamlit as st
 from db_communication import DocumentStore
 from haystack.nodes.retriever import ElasticsearchRetriever, EmbeddingRetriever
@@ -63,10 +64,9 @@ class SearchEngine:
     def get_reader(_self):
         # Init FARM-Reader-model for QA
 
-        reader = FARMReader(model_name_or_path=st.secrets.paths.reader, 
+        reader = FARMReader(model_name_or_path="../models/GELECTRA-distilled-LegalQuAD",
                             context_window_size=300,
-                            use_gpu=True, 
-                            local_files_only=True)
+                            use_gpu=True)
 
         return reader
 
