@@ -1,8 +1,9 @@
-beautifulsoup4==4.10.0
-django_haystack==3.1.1
-fastapi==0.75.0
-spacy==3.1.2
+spacy==3.2.3
 spacy_streamlit==1.0.2
 st_annotated_text==1.1.0
 streamlit==1.7.0
 farm-haystack==1.2.0
+fastapi
+spacy-transformers==1.1.5
+click==8.0.4
+streamlit_modal==0.0.5
