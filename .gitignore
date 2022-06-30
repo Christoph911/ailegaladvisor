@@ -1,7 +1,9 @@
-/mlruns
+/.streamlit
+/.vscode
 /models
-/utils
-/scr/mlruns
-src/.streamlit/secrets.toml
 src/__pycache__/
-__pycache__/
+src/.streamlit/
+src/mlruns/
+src/feedback.json
+src/nohup.out
+
