@@ -6,11 +6,13 @@
 # -----------------------------------------------------------
 
 import os
+from fastapi import FastAPI, APIRouter
 import streamlit as st
 from db_communication import DocumentStore
 from haystack.nodes.retriever import ElasticsearchRetriever, EmbeddingRetriever
 from haystack.nodes.reader import FARMReader
 from haystack.pipelines import DocumentSearchPipeline, ExtractiveQAPipeline
+
 
 class SearchEngine:
     '''
@@ -19,6 +21,10 @@ class SearchEngine:
     '''
 
     def __init__(self):
+        # init Router
+        self.router = APIRouter()
+        # Define route
+        self.router.add_api_route("/query", self.get_pipeline, methods=["GET"] )
         self.document_store = self.get_document_store()
         self.retriever_bm25 = self.get_retriever_bm25()
         #self.retriever_emb = self.get_retriever_emb()
@@ -64,7 +70,7 @@ class SearchEngine:
     def get_reader(_self):
         # Init FARM-Reader-model for QA
 
-        reader = FARMReader(model_name_or_path="../models/GELECTRA-distilled-LegalQuAD",
+        reader = FARMReader(model_name_or_path="../models/GELECTRA-large-LegalQuAD",
                             context_window_size=300,
                             use_gpu=True)
 
@@ -86,8 +92,6 @@ class SearchEngine:
         return qa_pipeline
     
 
-    #@app.get('/query')
-    # TODO: Filter not working
     async def get_pipeline(self, user_input, k_retriever=10, k_reader=5):
         '''
         Classify unser-input and call specific pipeline.
@@ -107,5 +111,10 @@ class SearchEngine:
             results = self.qa_pipeline.run(query=user_input, params={"Retriever": {"top_k": k_retriever}, "Reader": {"top_k": k_reader}})
         else:
             results = self.document_search_pipeline.run(query=user_input, params={"Retriever": {"top_k": k_retriever}})
-        print(results)
         return results
+
+
+# Init API
+app = FastAPI()
+qa = SearchEngine()
+app.include_router(qa.router)

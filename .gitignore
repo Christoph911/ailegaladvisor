@@ -6,4 +6,5 @@ src/.streamlit/
 src/mlruns/
 src/feedback.json
 src/nohup.out
-
+src/.streamlit
+utils/__pycache__

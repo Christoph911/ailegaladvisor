@@ -7,6 +7,7 @@
 
 import os
 import json
+import random
 import streamlit as st
 import asyncio
 from fastapi import FastAPI
@@ -108,7 +109,6 @@ class Streamlit:
 
                 #if document-retrieval pipeline is called:
                 if "answers" in results:
-                    increment_button_key_answer = 0 
                     st.write("## Relevante Antworten:")
                     for result in results["answers"]:
                         # response to dict 
@@ -127,16 +127,14 @@ class Streamlit:
                             st.write("**War diese Antwort hilfreich?**")
                             feedback_btn_col1, feedback_btn_col2 = st.columns([1,7])
                             with feedback_btn_col1:
-                                st.button("👍 Ja", key=increment_button_key_answer), 
+                                st.button("👍 Ja", key=random.getrandbits(128)), 
                             with feedback_btn_col2:
-                                st.button("👎 Nein", key=increment_button_key_answer)
-                            increment_button_key_answer +=1
+                                st.button("👎 Nein", key=random.getrandbits(128))
                             # if check_legal_ner:
                             #     st.write("**Legal Entities**")
                             #     st.write(ner.get_entities(answer["content"]), unsafe_allow_html=True)
 
                 else:
-                    increment_button_key_passage = 0 
                     st.write("## Relevante Passagen:")
                     st.markdown("""---""")
                     for result in results["documents"]:
@@ -155,12 +153,10 @@ class Streamlit:
                             st.write("**War diese Passage hilfreich?**")
                             feedback_btn_col1, feedback_btn_col2 = st.columns([1,7])
                             with feedback_btn_col1:
-                                st.button("👍 Ja", key=increment_button_key_passage)
+                                st.button("👍 Ja", key=random.getrandbits(128))
                             with feedback_btn_col2:
-                                st.button("👎 Nein", key=increment_button_key_passage)
+                                st.button("👎 Nein", key=random.getrandbits(128))
                             
-                            increment_button_key_passage +=1
-                        
                             # if check_legal_ner:
                             #     st.write("**Legal Entities**")
                             #     st.markdown(ner.get_entities(document["content"]), unsafe_allow_html=True)
