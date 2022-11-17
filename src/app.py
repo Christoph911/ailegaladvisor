@@ -6,23 +6,13 @@
 # -----------------------------------------------------------
 
 import os
-import json
 import random
 import requests
 import streamlit as st
-import asyncio
-from fastapi import FastAPI
 from annotated_text import annotated_text
-from search_engine import SearchEngine
 from legal_ner import LegalNER
-import time
 import streamlit_modal as modal
 import streamlit.components.v1 as components
-from api import API
-
-# TODO: Implement FastAPI
-# init api
-#app = FastAPI()
 
 
 class Streamlit:
@@ -68,7 +58,6 @@ class Streamlit:
 
         # title
         st.image(os.path.join("..", "data", "Logo_aila.png"), use_column_width='auto')
-        #st.title('AI-based Legal Advisor :scales:')
 
         # sidebar
         st.sidebar.write("**Filter:**")
@@ -108,9 +97,6 @@ class Streamlit:
                 
                 results = requests.get(url=f"http://127.0.0.1:8000/query?user_input={user_input}&k_retriever={filter_n_retriever}&k_reader={filter_n_reader}")
                 results = results.json()
-                print(results)
-                # call pipeline with user input
-                #results = asyncio.run(qa.get_pipeline(user_input, filter_n_retriever, filter_n_reader))
 
                 #if document-retrieval pipeline is called:
                 if "answers" in results:
@@ -168,10 +154,6 @@ class Streamlit:
 
                             
 if __name__ == "__main__":
-    # init API
-    api = API()
-    # init SearchEngine
-    qa = SearchEngine()
     # init legal NER
     ner = LegalNER()
     # init Streamlit

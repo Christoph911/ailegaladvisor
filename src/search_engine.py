@@ -24,7 +24,7 @@ class SearchEngine:
         # init Router
         self.router = APIRouter()
         # Define route
-        self.router.add_api_route("/query", self.get_pipeline, methods=["GET"] )
+        self.router.add_api_route("/query", self.get_pipeline, methods=["GET"])
         self.document_store = self.get_document_store()
         self.retriever_bm25 = self.get_retriever_bm25()
         #self.retriever_emb = self.get_retriever_emb()
@@ -65,7 +65,6 @@ class SearchEngine:
 
     #     return retriever_emb
 
-    #TODO: Change to own reader model 
     @st.experimental_singleton
     def get_reader(_self):
         # Init FARM-Reader-model for QA
@@ -92,7 +91,7 @@ class SearchEngine:
         return qa_pipeline
     
 
-    async def get_pipeline(self, user_input, k_retriever=10, k_reader=5):
+    async def get_pipeline(self, user_input: str, k_retriever=10, k_reader=5):
         '''
         Classify unser-input and call specific pipeline.
 
