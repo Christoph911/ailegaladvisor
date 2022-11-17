@@ -8,6 +8,7 @@
 import os
 import json
 import random
+import requests
 import streamlit as st
 import asyncio
 from fastapi import FastAPI
@@ -17,6 +18,7 @@ from legal_ner import LegalNER
 import time
 import streamlit_modal as modal
 import streamlit.components.v1 as components
+from api import API
 
 # TODO: Implement FastAPI
 # init api
@@ -104,15 +106,18 @@ class Streamlit:
                 "Dieser Prozess kann etwas Zeit in Anspruch nehmen. \n"
                 "Bitte nicht abbrechen!"):
                 
+                results = requests.get(url=f"http://127.0.0.1:8000/query?user_input={user_input}&k_retriever={filter_n_retriever}&k_reader={filter_n_reader}")
+                results = results.json()
+                print(results)
                 # call pipeline with user input
-                results = asyncio.run(qa.get_pipeline(user_input, filter_n_retriever, filter_n_reader))
+                #results = asyncio.run(qa.get_pipeline(user_input, filter_n_retriever, filter_n_reader))
 
                 #if document-retrieval pipeline is called:
                 if "answers" in results:
                     st.write("## Relevante Antworten:")
                     for result in results["answers"]:
                         # response to dict 
-                        answer = result.to_dict()
+                        answer = result
                         st.write("**Relevanz:**", round(answer["score"],2)),
                         with st.expander(label=answer["meta"]["file_type"] + " | " + answer["meta"]["court_name"] + " | " + answer["meta"]["file_date"]):
                             st.write("**Titel:**", answer["meta"]["file_slug"]),
@@ -138,7 +143,7 @@ class Streamlit:
                     st.write("## Relevante Passagen:")
                     st.markdown("""---""")
                     for result in results["documents"]:
-                        document = result.to_dict()
+                        document = result
                         st.write("**Relevanz:**", round(document["score"], 2)),
                         with st.expander(label=document["meta"]["file_type"] + " | " + document["meta"]["court_name"] + " | " + document["meta"]["file_date"]):
                             st.write("**Titel:**", document["meta"]["file_slug"]),
@@ -163,6 +168,8 @@ class Streamlit:
 
                             
 if __name__ == "__main__":
+    # init API
+    api = API()
     # init SearchEngine
     qa = SearchEngine()
     # init legal NER

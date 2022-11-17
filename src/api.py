@@ -1,7 +1,5 @@
 from fastapi import FastAPI, APIRouter
-import sys
-sys.path.append("./")
-from src import search_engine
+from search_engine import SearchEngine
 
 class API:
 
@@ -9,7 +7,7 @@ class API:
         # init Router
         self.router = APIRouter()
         # Define route
-        self.router.add_api_route("/query", self.get_pipeline, methods=["GET"] )
+        self.router.add_api_route("/query", self.get_pipeline, methods=["GET"])
         # init search engine
         self.qa = SearchEngine()
         self.qa_pipeline = qa.get_qa_pipeline()
