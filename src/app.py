@@ -67,7 +67,7 @@ class Streamlit:
         #filter_file_number = st.sidebar.text_input(label="Bezeichnung der Entscheidung:", value="VIII B 90/09")
         filter_n_retriever = st.sidebar.number_input(min_value=1, max_value=20, value=10, label="Anzahl auszugebender Passagen")
         filter_n_reader = st.sidebar.number_input(min_value=0, max_value=20, value=3, label="Anzahl extrahierter Antworten")
-        #check_legal_ner = st.sidebar.checkbox("Show Legal Entities")
+        check_legal_ner = st.sidebar.checkbox("Show Legal Entities")
         open_modal = st.sidebar.button("Hilfe")
 
         # modal 
@@ -121,9 +121,9 @@ class Streamlit:
                                 st.button("👍 Ja", key=random.getrandbits(128)), 
                             with feedback_btn_col2:
                                 st.button("👎 Nein", key=random.getrandbits(128))
-                            # if check_legal_ner:
-                            #     st.write("**Legal Entities**")
-                            #     st.write(ner.get_entities(answer["content"]), unsafe_allow_html=True)
+                            if check_legal_ner:
+                                 st.write("**Legal Entities**")
+                                 st.markdown(ner.get_entities(answer["content"]), unsafe_allow_html=True)
 
                 else:
                     st.write("## Relevante Passagen:")
@@ -148,9 +148,9 @@ class Streamlit:
                             with feedback_btn_col2:
                                 st.button("👎 Nein", key=random.getrandbits(128))
                             
-                            # if check_legal_ner:
-                            #     st.write("**Legal Entities**")
-                            #     st.markdown(ner.get_entities(document["content"]), unsafe_allow_html=True)
+                            if check_legal_ner:
+                                 st.write("**Legal Entities**")
+                                 st.markdown(ner.get_entities(document["content"]), unsafe_allow_html=True)
 
                             
 if __name__ == "__main__":
