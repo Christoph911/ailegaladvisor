@@ -121,9 +121,8 @@ class Streamlit:
                                 st.button("👍 Ja", key=random.getrandbits(128)), 
                             with feedback_btn_col2:
                                 st.button("👎 Nein", key=random.getrandbits(128))
-                            if check_legal_ner:
-                                 st.write("**Legal Entities**")
-                                 st.markdown(ner.get_entities(answer["content"]), unsafe_allow_html=True)
+                        if check_legal_ner:
+                            st.write("Funktion zurzeit nicht utnerstützt")
 
                 else:
                     st.write("## Relevante Passagen:")
@@ -132,26 +131,39 @@ class Streamlit:
                         document = result
                         st.write("**Relevanz:**", round(document["score"], 2)),
                         with st.expander(label=document["meta"]["file_type"] + " | " + document["meta"]["court_name"] + " | " + document["meta"]["file_date"]):
-                            st.write("**Titel:**", document["meta"]["file_slug"]),
-                            st.write("**Datum:**", document["meta"]["file_date"]),
-                            st.write("**Bez.:**", document["meta"]["file_number"]),
-                            st.write("**ECLI:**", document["meta"]["file_ecli"]),
-                            st.write("**Typ.:**", document["meta"]["file_type"]),
-                            st.write("**Gericht:**", document["meta"]["court_name"]),
-                            st.write("**Gerichtbarkeit:**", document["meta"]["court_jurisdiction"]),
-                            st.markdown(document["content"], unsafe_allow_html=True)
-                            st.markdown("""---""")
-                            st.write("**War diese Passage hilfreich?**")
-                            feedback_btn_col1, feedback_btn_col2 = st.columns([1,7])
-                            with feedback_btn_col1:
-                                st.button("👍 Ja", key=random.getrandbits(128))
-                            with feedback_btn_col2:
-                                st.button("👎 Nein", key=random.getrandbits(128))
-                            
                             if check_legal_ner:
-                                 st.write("**Legal Entities**")
-                                 st.markdown(ner.get_entities(document["content"]), unsafe_allow_html=True)
-
+                                st.write("**Titel:**", document["meta"]["file_slug"]),
+                                st.write("**Datum:**", document["meta"]["file_date"]),
+                                st.write("**Bez.:**", document["meta"]["file_number"]),
+                                st.write("**ECLI:**", document["meta"]["file_ecli"]),
+                                st.write("**Typ.:**", document["meta"]["file_type"]),
+                                st.write("**Gericht:**", document["meta"]["court_name"]),
+                                st.write("**Gerichtbarkeit:**", document["meta"]["court_jurisdiction"]),
+                                st.markdown(ner.get_entities(document["content"]), unsafe_allow_html=True)
+                                st.markdown("""---""")
+                                st.write("**War diese Passage hilfreich?**")
+                                feedback_btn_col1, feedback_btn_col2 = st.columns([1,7])
+                                with feedback_btn_col1:
+                                    st.button("👍 Ja", key=random.getrandbits(128))
+                                with feedback_btn_col2:
+                                    st.button("👎 Nein", key=random.getrandbits(128))
+                            else:
+                                st.write("**Titel:**", document["meta"]["file_slug"]),
+                                st.write("**Datum:**", document["meta"]["file_date"]),
+                                st.write("**Bez.:**", document["meta"]["file_number"]),
+                                st.write("**ECLI:**", document["meta"]["file_ecli"]),
+                                st.write("**Typ.:**", document["meta"]["file_type"]),
+                                st.write("**Gericht:**", document["meta"]["court_name"]),
+                                st.write("**Gerichtbarkeit:**", document["meta"]["court_jurisdiction"]),
+                                st.markdown(document["content"], unsafe_allow_html=True)
+                                st.markdown("""---""")
+                                st.write("**War diese Passage hilfreich?**")
+                                feedback_btn_col1, feedback_btn_col2 = st.columns([1,7])
+                                with feedback_btn_col1:
+                                    st.button("👍 Ja", key=random.getrandbits(128))
+                                with feedback_btn_col2:
+                                    st.button("👎 Nein", key=random.getrandbits(128))
+      
                             
 if __name__ == "__main__":
     # init legal NER

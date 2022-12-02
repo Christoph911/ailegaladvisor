@@ -7,6 +7,23 @@
 
 import os 
 import spacy
+import re
+from bs4 import BeautifulSoup
+
+# dictionary to color entities found
+ENTITY_COLORS = ({ "GS":   "#00A5E3", 
+            "GRT":  "#8DD7BF", 
+            "MRK":  "#FF96C5",
+            "VO":   "#FF5768",
+            "RS":   "#FFBF65", 
+            "LIT":  "#FC6238",
+            "INN":  "#FFD872",
+            "UN":   "#F2D4CC",
+            "VS":   "#E77577",
+            "PER":  "#6C88C4",
+            "LD":   "#C05780",
+
+            })
 
 
 class LegalNER:
@@ -21,7 +38,7 @@ class LegalNER:
     def get_entities(self, context):
         '''
         Get context from QA and Doc-Retrieval pipeline, 
-        call Spacy transformer-model and search for legal named entities
+        call Spacy transformer-model, remove html tags and search for legal named entities
 
         Args: 
             context: passage or context in which an answer is located
@@ -30,7 +47,8 @@ class LegalNER:
             DataFrame with Legal Named Entities
         '''
 
-        doc = self.ner_model(context)
+        cleantext = BeautifulSoup(context, "lxml").get_text("\n", strip=True)
+        doc = self.ner_model(cleantext)
         params = {"text": doc.text,
           "ents": [{"start": ent.start_char,
                     "end": ent.end_char,
@@ -39,23 +57,10 @@ class LegalNER:
                     "kb_url": f"https://www.google.de/search?q={ent.text}"}
                    for ent in doc.ents],
           "title": None}
-        # dictionary to color entities found
-        COLORS = ({ "GS":   "#00A5E3", 
-                    "GRT":  "#8DD7BF", 
-                    "MRK":  "#FF96C5",
-                    "VO":   "#FF5768",
-                    "RS":   "#FFBF65", 
-                    "LIT":  "#FC6238",
-                    "INN":  "#FFD872",
-                    "UN":   "#F2D4CC",
-                    "VS":   "#E77577",
-                    "PER":  "#6C88C4",
-                    "LD":   "#C05780",
-
-                    })
-        options = {"colors": COLORS}
+        
+        options = {"colors": ENTITY_COLORS}
 
 
-        ner = spacy.displacy.render(params, style="ent", manual=True, options=options)
+        ner = spacy.displacy.render(params, style="ent", manual=True, options=options, page=True, jupyter=False)
 
         return ner
